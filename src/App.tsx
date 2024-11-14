@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 import Viewer3D from './viewer3d/Viewer3D';
+import parse from './parser/parser';
 
 function App() {
   const canvas = useRef<null | HTMLCanvasElement>(null);
@@ -11,8 +12,10 @@ function App() {
     canvas.current.width = window.innerWidth;
     canvas.current.height = window.innerHeight;
 
-    viewer.current = new Viewer3D(canvas.current);
-    viewer.current.render();
+    parse('/cube.obj').then(vertices => {
+      viewer.current = new Viewer3D(canvas.current!);
+      viewer.current.render(vertices);
+    });
   }, []);
 
   return <canvas ref={canvas} />;

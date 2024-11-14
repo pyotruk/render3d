@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { ConvexGeometry } from 'three/examples/jsm/geometries/ConvexGeometry';
+
+import { Point } from 'types';
 
 class Viewer3D {
   private readonly scene: THREE.Scene;
@@ -7,7 +10,7 @@ class Viewer3D {
 
   private readonly renderer: THREE.WebGLRenderer;
 
-  private readonly material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  private readonly material = new THREE.MeshNormalMaterial();
 
   constructor(canvas: HTMLCanvasElement) {
     this.scene = new THREE.Scene();
@@ -19,14 +22,14 @@ class Viewer3D {
     this.renderer.setSize(canvas.width, canvas.height);
   }
 
-  render() {
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const cube = new THREE.Mesh(geometry, this.material);
-    this.scene.add(cube);
+  render(vertices: Point[]) {
+    const geometry = new ConvexGeometry(vertices.map(v => new THREE.Vector3(v.x, v.y, v.z)));
+    const mesh = new THREE.Mesh(geometry, this.material);
+    this.scene.add(mesh);
     const animate = () => {
       requestAnimationFrame(animate);
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
+      mesh.rotation.x += 0.01;
+      mesh.rotation.y += 0.01;
       this.renderer.render(this.scene, this.camera);
     };
     animate();
