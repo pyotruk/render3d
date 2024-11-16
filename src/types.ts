@@ -1,5 +1,3 @@
-export type Point = {
-  x: number;
-  y: number;
-  z: number;
-}
+export type Vertex = [number, number, number];
+
+export type Face = number[];

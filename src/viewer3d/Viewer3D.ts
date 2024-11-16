@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { ConvexGeometry } from 'three/examples/jsm/geometries/ConvexGeometry';
 
-import { Point } from 'types';
+import { Face, Vertex } from 'types';
 
 class Viewer3D {
   private readonly scene: THREE.Scene;
@@ -10,7 +10,8 @@ class Viewer3D {
 
   private readonly renderer: THREE.WebGLRenderer;
 
-  private readonly material = new THREE.MeshNormalMaterial();
+  private readonly material = new THREE.MeshMatcapMaterial();
+  // private readonly material = new THREE.MeshNormalMaterial();
 
   constructor(canvas: HTMLCanvasElement) {
     this.scene = new THREE.Scene();
@@ -22,17 +23,32 @@ class Viewer3D {
     this.renderer.setSize(canvas.width, canvas.height);
   }
 
-  render(vertices: Point[]) {
-    const geometry = new ConvexGeometry(vertices.map(v => new THREE.Vector3(v.x, v.y, v.z)));
-    const mesh = new THREE.Mesh(geometry, this.material);
-    this.scene.add(mesh);
+  private setupAnimation(mesh: THREE.Mesh) {
     const animate = () => {
       requestAnimationFrame(animate);
+      // eslint-disable-next-line no-param-reassign
       mesh.rotation.x += 0.01;
+      // eslint-disable-next-line no-param-reassign
       mesh.rotation.y += 0.01;
       this.renderer.render(this.scene, this.camera);
     };
     animate();
+  }
+
+  renderConvexGeometry(vertices: Vertex[]) {
+    const geometry = new ConvexGeometry(vertices.map(v => new THREE.Vector3(...v)));
+    const mesh = new THREE.Mesh(geometry, this.material);
+    this.scene.add(mesh);
+    this.setupAnimation(mesh);
+  }
+
+  renderPlaneGeometry(vertices: Vertex[], faces: Face[]) {
+    faces.forEach(face => {
+      const geometry = new ConvexGeometry(face.map(vertexIdx => new THREE.Vector3(...vertices[vertexIdx - 1])));
+      const plane = new THREE.Mesh(geometry, this.material);
+      this.scene.add(plane);
+      this.setupAnimation(plane);
+    });
   }
 }
 

@@ -12,9 +12,10 @@ function App() {
     canvas.current.width = window.innerWidth;
     canvas.current.height = window.innerHeight;
 
-    parse('/icosphere.obj').then(vertices => {
+    parse('/icosphere.obj').then(([vertices, faces]) => {
       viewer.current = new Viewer3D(canvas.current!);
-      viewer.current.render(vertices);
+      viewer.current.renderConvexGeometry(vertices);
+      // viewer.current.renderPlaneGeometry(vertices, faces);
     });
   }, []);
 

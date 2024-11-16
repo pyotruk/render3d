@@ -1,18 +1,20 @@
-import { Point } from 'types';
+import { Face, Vertex } from 'types';
 
-const parse = async (meshFileUrl: string): Promise<Point[]> => {
+const parse = async (meshFileUrl: string): Promise<[Vertex[], Face[]]> => {
   const meshText: string = await (await fetch(meshFileUrl)).text();
-  const vertices: Point[] = [];
+  const vertices: Vertex[] = [];
+  const faces: Face[] = [];
   meshText.split('\n').forEach(line => {
-    if (!line.startsWith('v ')) return;
-    const chunks = line.split(' ');
-    vertices.push({
-      x: Number(chunks[1]),
-      y: Number(chunks[2]),
-      z: Number(chunks[3]),
-    });
+    if (line.startsWith('v ')) {
+      const chunks = line.split(' ');
+      vertices.push([Number(chunks[1]), Number(chunks[2]), Number(chunks[3])]);
+    }
+    if (line.startsWith('f ')) {
+      const chunks = line.split(' ').splice(1);
+      faces.push(chunks.map(c => Number(c.split('/')[0])));
+    }
   });
-  return vertices;
+  return [vertices, faces];
 };
 
 export default parse;
