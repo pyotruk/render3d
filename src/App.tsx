@@ -12,7 +12,7 @@ function App() {
     canvas.current.width = window.innerWidth;
     canvas.current.height = window.innerHeight;
 
-    parse('/cube.obj').then(vertices => {
+    parse('/icosphere.obj').then(vertices => {
       viewer.current = new Viewer3D(canvas.current!);
       viewer.current.render(vertices);
     });
